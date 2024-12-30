@@ -32,7 +32,6 @@ Value Apply::eval(Assoc &e) {
     Value v0 = rator->eval(e);
     Closure* clo = dynamic_cast<Closure*>(v0.get());
     if(clo != nullptr) {
-        std::cout << std::endl;
         if(clo->parameters.size() != rand.size())
             throw RuntimeError(std::string("Wrong number of rand " + std::to_string(clo->parameters.size()) + std::to_string(rand.size()) + " parameters"));
         Assoc env = e;
