@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="src"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="src">
+				<Option output="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/src" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/."/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 src"/>
+					<CompileFile command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="src/fast">
+				<Option output="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/src" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/."/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 src/fast"/>
+					<CompileFile command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j32 -f &quot;/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/Def.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/Def.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/RE.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/RE.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/evaluation.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/expr.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/expr.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/main.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/parser.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/shared.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/syntax.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/syntax.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/value.cpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/value.hpp">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/matthewwu/Big_Homework_4/Scheme-Interpreter-main/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
