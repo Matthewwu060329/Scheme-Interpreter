@@ -34,7 +34,7 @@ Value Apply::eval(Assoc &e) {
     if(clo != nullptr) {
         if(clo->parameters.size() != rand.size())
             throw RuntimeError(std::string("Wrong number of rand " + std::to_string(clo->parameters.size()) + std::to_string(rand.size()) + " parameters"));
-        Assoc env = e;
+        Assoc env = clo->env;
         for(int i = 0; i < clo->parameters.size(); i++) {
             env = Assoc(new AssocList(clo->parameters[i],rand[i]->eval(e),env));
         }
@@ -156,7 +156,29 @@ Value Syntax::preeval(Assoc &e) {
     List* list = dynamic_cast<List*>(ptr.get());
     if(list != nullptr) {
         int sum = list->stxs.size();
-        if(sum >= 1) {
+        if(sum == 1) {
+            Identifier* id0 = dynamic_cast<Identifier*>(list->stxs[0].get());
+            if(id0 != nullptr && id0->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+            return PairV(list->stxs[0].preeval(e), NullV());
+        }
+        else if(sum == 2) {
+            Identifier* id1 = dynamic_cast<Identifier*>(list->stxs[0].get());
+            Identifier* id2 = dynamic_cast<Identifier*>(list->stxs[1].get());
+            if(id1 != nullptr && id1->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+            if(id2 != nullptr && id2->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+            return PairV(list->stxs[0].preeval(e), list->stxs[1].preeval(e));
+        }
+        else if (sum >= 3) {
+            int num = 0;
+            for(int i = 0; i < list->stxs.size(); i++) {
+                Identifier* id = dynamic_cast<Identifier*>(list->stxs[i].get());
+                if(id != nullptr && id->s == ".") num++;
+            }
+            if(num >= 2) throw RuntimeError(std::string("Wrong format of identifier"));
+            if(num == 1) {
+                Identifier* ide = dynamic_cast<Identifier*>(list->stxs[list->stxs.size() - 2].get());
+                if(!(ide != nullptr && ide->s == ".")) throw RuntimeError(std::string("Wrong format of identifier"));
+            }
             Value pair = PairV(list->stxs[sum - 1].preeval(e),NullV());
             for(int i = sum - 2; i >= 0; i--) {
                 pair = PairV(list->stxs[i].preeval(e), pair);
@@ -319,11 +341,21 @@ Value Not::evalRator(const Value &rand) {
 Value Car::evalRator(const Value &rand) {
     Pair* pair = dynamic_cast<Pair*>(rand.get());
     if(pair == nullptr) throw RuntimeError(std::string("Inappropriate pair type error"));
-    return Value(pair->car);
+    return pair->car;
 } // car
 
 Value Cdr::evalRator(const Value &rand) {
     Pair* pair = dynamic_cast<Pair*>(rand.get());
     if(pair == nullptr) throw RuntimeError(std::string("Inappropriate pair type error"));
-    return Value(pair->cdr);
+    Value subpair = pair->cdr;
+    Pair* ispair = dynamic_cast<Pair*>(subpair.get());
+    if(ispair != nullptr) {
+        Symbol* ide = dynamic_cast<Symbol*>(ispair->car.get());
+        if(ide != nullptr && ide->s == ".") {
+            Pair* final_pair = dynamic_cast<Pair*>(ispair->cdr.get());
+            if(final_pair == nullptr) return ispair->cdr;
+            return final_pair->car;
+        }
+    }
+    return pair->cdr;
 } // cdr
