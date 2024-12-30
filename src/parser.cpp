@@ -84,18 +84,20 @@ Expr List :: parse(Assoc &env) {
                 if(stxs.size() != 3) return Expr(new Let(bind,Expr(nullptr)));
 
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
-                if(list1 == nullptr) return Expr(new Let(bind,Expr(nullptr)));
-                if(list1->stxs.size() == 0) return Expr(new Let(bind,Expr(nullptr)));
+                MakeVoid* void1 = dynamic_cast<MakeVoid*>(stxs[1].get());
+                if(list1 == nullptr && void1 == nullptr) return Expr(new Let(bind,Expr(nullptr)));
+                if(list1 != nullptr) {
+                    for(int i = 0; i < list1->stxs.size(); i++) {
+                        List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
+                        if(list0 == nullptr) return Expr(new Let(bind,Expr(nullptr)));
+                        if(list0->stxs.size() != 2) return Expr(new Let(bind,Expr(nullptr)));
 
-                for(int i = 0; i < list1->stxs.size(); i++) {
-                    List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
-                    if(list0 == nullptr) return Expr(new Let(bind,Expr(nullptr)));
-                    if(list0->stxs.size() != 2) return Expr(new Let(bind,Expr(nullptr)));
-
-                    Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
-                    if(unbind == nullptr) return Expr(new Let(bind,Expr(nullptr)));
-                    bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                        Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
+                        if(unbind == nullptr) return Expr(new Let(bind,Expr(nullptr)));
+                        bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                    }
                 }
+
                 return Expr(new Let(bind,stxs[2].parse(env)));
             }
             if(expr == E_LETREC) {
@@ -103,18 +105,20 @@ Expr List :: parse(Assoc &env) {
                 if(stxs.size() != 3) return Expr(new Letrec(bind,Expr(nullptr)));
 
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
-                if(list1 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
-                if(list1->stxs.size() == 0) return Expr(new Letrec(bind,Expr(nullptr)));
+                MakeVoid* void1 = dynamic_cast<MakeVoid*>(stxs[1].get());
+                if(list1 == nullptr && void1 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
+                if(list1 != nullptr) {
+                    for(int i = 0; i < list1->stxs.size(); i++) {
+                        List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
+                        if(list0 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
+                        if(list0->stxs.size() != 2) return Expr(new Letrec(bind,Expr(nullptr)));
 
-                for(int i = 0; i < list1->stxs.size(); i++) {
-                    List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
-                    if(list0 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
-                    if(list0->stxs.size() != 2) return Expr(new Letrec(bind,Expr(nullptr)));
-
-                    Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
-                    if(unbind == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
-                    bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                        Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
+                        if(unbind == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
+                        bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                    }
                 }
+
                 return Expr(new Letrec(bind,stxs[2].parse(env)));
             }
         }
