@@ -319,7 +319,7 @@ Value IsProcedure::evalRator(const Value &rand) {
 
 Value Not::evalRator(const Value &rand) {
     Boolean* boo = dynamic_cast<Boolean*>(rand.get());
-    if(boo !=nullptr || boo->b == false) return Value(new Boolean(true));
+    if(boo !=nullptr && boo->b == false) return Value(new Boolean(true));
     return Value(new Boolean(false));
 } // not
 
