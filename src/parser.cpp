@@ -106,6 +106,7 @@ Expr List :: parse(Assoc &env) {
                 vector<pair<string,Expr>> bind;
                 if(stxs.size() != 3) return Expr(new Letrec(bind,Expr(nullptr)));
 
+                Assoc env1 = env;
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
                 MakeVoid* void1 = dynamic_cast<MakeVoid*>(stxs[1].get());
                 if(list1 == nullptr && void1 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
@@ -117,11 +118,12 @@ Expr List :: parse(Assoc &env) {
 
                         Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
                         if(unbind == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
-                        bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                        env1 = extend(unbind->s, NullV(), env1);
+                        bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env1)));
                     }
                 }
 
-                return Expr(new Letrec(bind,stxs[2].parse(env)));
+                return Expr(new Letrec(bind,stxs[2].parse(env1)));
             }
         }
         vector<Expr> rand;
