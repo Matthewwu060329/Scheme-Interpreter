@@ -197,18 +197,24 @@ Value Quote::eval(Assoc &e) {
     List* lst = dynamic_cast<List*>(s.get());
     if(lst != nullptr){
         int count = 0;
-        if(lst->stxs.size() == 0) return NullV();
-        for(int i = 0; i < lst->stxs.size();i++){
+        for(int i = 0; i < lst->stxs.size(); i++){
             Identifier* ide = dynamic_cast<Identifier*>(lst->stxs[i].get());
             if(ide != nullptr && ide->s == ".") count++;
         }
         if(count >= 2) throw RuntimeError("Too many dots in 'Quote'");
-        else if(count == 1) {
-            Identifier* ide = dynamic_cast<Identifier*>(lst->stxs[lst->stxs.size() - 2].get());
-            if(!(ide != nullptr && ide->s == ".")) throw RuntimeError("Wrong use of dot in 'Quote'");
-        }
+        if(lst->stxs.size() == 0) return NullV();
         Quote first_quote(lst->stxs[0]);
         Value v = first_quote.eval(e);
+
+        if(lst->stxs.size() == 3){
+            Identifier* ide1 = dynamic_cast<Identifier*>(lst->stxs[1].get());
+            if(ide1 != nullptr && ide1->s == ".") {
+                Quote quote1(lst->stxs[2]);
+                Value value1 = quote1.eval(e);
+                return Value(new Pair(v,value1));
+            }
+        }
+
         List *list = new List();
         for(int i = 1; i < lst->stxs.size(); i++) list->stxs.push_back(lst->stxs[i]);
         Syntax second_list(list);
@@ -216,17 +222,13 @@ Value Quote::eval(Assoc &e) {
         return Value(new Pair(v,second_v->eval(e)));
     }
 
-    Number* num = dynamic_cast<Number*>(s.get());
-    if(num != nullptr) return IntegerV(num->n);
+    if(dynamic_cast<Identifier*>(s.get()))return SymbolV(dynamic_cast<Identifier*>(s.get())->s);
 
-    Identifier* id = dynamic_cast<Identifier*>(s.get());
-    if(id != nullptr) return SymbolV(id->s);
+    if(dynamic_cast<TrueSyntax*>(s.get())) return BooleanV(true);
 
-    TrueSyntax* tru = dynamic_cast<TrueSyntax*>(s.get());
-    if(tru != nullptr) BooleanV(true);
+    if(dynamic_cast<FalseSyntax*>(s.get())) return BooleanV(false);
 
-    FalseSyntax* fal = dynamic_cast<FalseSyntax*>(s.get());
-    if(fal != nullptr) BooleanV(false);
+    if(dynamic_cast<Number*>(s.get())) return IntegerV(dynamic_cast<Number*>(s.get())->n);
 
     throw RuntimeError(std::string("Data type error"));
 } // quote expression
@@ -383,14 +385,5 @@ Value Cdr::evalRator(const Value &rand) {
     Pair* pair = dynamic_cast<Pair*>(rand.get());
     if(pair == nullptr) throw RuntimeError(std::string("Inappropriate pair type error"));
     Value subpair = pair->cdr;
-    Pair* ispair = dynamic_cast<Pair*>(subpair.get());
-    if(ispair != nullptr) {
-        Symbol* ide = dynamic_cast<Symbol*>(ispair->car.get());
-        if(ide != nullptr && ide->s == ".") {
-            Pair* final_pair = dynamic_cast<Pair*>(ispair->cdr.get());
-            if(final_pair != nullptr) return final_pair->car;
-            return ispair->cdr;
-        }
-    }
     return subpair;
 } // cdr
