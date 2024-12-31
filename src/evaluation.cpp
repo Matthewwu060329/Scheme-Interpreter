@@ -23,6 +23,7 @@ Value Let::eval(Assoc &env) {
 } // let expression
 
 Value Lambda::eval(Assoc &env) {
+    if(e.get() == nullptr) throw RuntimeError("Wrong format of 'Lambda'");
     return ClosureV(x,e,env);
 } // lambda expression
 
