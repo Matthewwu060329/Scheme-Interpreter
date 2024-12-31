@@ -46,15 +46,17 @@ Value Letrec::eval(Assoc &env) {
     if(body.get() == nullptr) throw RuntimeError("Wrong format of 'Letrec'");
 
     Assoc env1 = env;
+    std::vector<Value> binding;
     for(int i = 0; i < bind.size(); i++) {
         std::string varName = bind[i].first;
         env1 = extend(varName, Value(nullptr), env1);
     }
-
     for(int i = 0; i < bind.size(); i++) {
-        modify(bind[i].first, bind[i].second->eval(env1), env1);
+        binding.push_back(bind[i].second->eval(env1));
     }
-
+    for(int i = 0; i < binding.size(); i++){
+        modify(bind[i].first, binding[i], env1);
+    }
     return body->eval(env1);
 } // letrec expression
 
