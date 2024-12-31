@@ -43,28 +43,30 @@ Expr List :: parse(Assoc &env) {
     else {
         string str = var->s;
 
-        // auto iter1 = primitives.find(str);
-        // if(iter1 != primitives.end()) {
-        //     vector<Expr> rand;
-        //     for(int i = 1; i < stxs.size(); i++) rand.push_back(stxs[i].parse(env));
-        //     return Expr(new Apply(stxs[0].parse(env), rand));
-        // }
+        Value vv = find(str, env);
+        if(vv.get() != nullptr) {
+            vector<Expr> rand;
+            for(int i = 1; i < stxs.size(); i++) rand.push_back(stxs[i].parse(env));
+            return Expr(new Apply(stxs[0].parse(env), rand));
+        }
 
         auto iter2 = reserved_words.find(str);
         if(iter2 != reserved_words.end()) {
             ExprType expr = iter2->second;
             if(expr == E_LAMBDA) {
-                if(stxs.size() != 3) throw RuntimeError(string("Wrong number of arguments"));
-                List* list1 = dynamic_cast<List*>(stxs[1].get());
-                if(list1 == nullptr) throw RuntimeError(string("Data type error"));
                 vector<std::string> xs;
+                if(stxs.size() != 3) return Expr(new Lambda(xs, Expr(nullptr)));
+                List* list1 = dynamic_cast<List*>(stxs[1].get());
+                if(list1 == nullptr) return Expr(new Lambda(xs, Expr(nullptr)));
                 Expr expr = nullptr;
+                Assoc env1 = env;
                 for(int i = 0; i < list1->stxs.size(); i++) {
                     Identifier* var = dynamic_cast<Identifier*>(list1->stxs[i].get());
-                    if(var == nullptr) throw RuntimeError(string("Data type error"));
+                    if(var == nullptr) return Expr(new Lambda(xs, Expr(nullptr)));
                     xs.push_back(var->s);
+                    env1 = extend(var->s, NullV(), env1);
                 }
-                return Expr(new Lambda(xs,stxs[2].parse(env)));
+                return Expr(new Lambda(xs,stxs[2].parse(env1)));
             }
             if(expr == E_IF) {
                 if(stxs.size() != 4) return Expr(new If(Expr(nullptr),Expr(nullptr),Expr(nullptr)));
