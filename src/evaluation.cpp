@@ -140,60 +140,95 @@ Value Begin::eval(Assoc &e) {
     return val;
 } // begin expression
 
-Value Syntax::preeval(Assoc &e) {
-    Number* num = dynamic_cast<Number*>(ptr.get());
-    if(num != nullptr) return IntegerV(num->n);
-
-    Identifier* id = dynamic_cast<Identifier*>(ptr.get());
-    if(id != nullptr) return SymbolV(id->s);
-
-    TrueSyntax* tru = dynamic_cast<TrueSyntax*>(ptr.get());
-    if(tru != nullptr) BooleanV(true);
-
-    FalseSyntax* fal = dynamic_cast<FalseSyntax*>(ptr.get());
-    if(fal != nullptr) BooleanV(false);
-
-    List* list = dynamic_cast<List*>(ptr.get());
-    if(list != nullptr) {
-        int sum = list->stxs.size();
-        if(sum == 1) {
-            Identifier* id0 = dynamic_cast<Identifier*>(list->stxs[0].get());
-            if(id0 != nullptr && id0->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
-            return PairV(list->stxs[0].preeval(e), NullV());
-        }
-        else if(sum == 2) {
-            Identifier* id1 = dynamic_cast<Identifier*>(list->stxs[0].get());
-            Identifier* id2 = dynamic_cast<Identifier*>(list->stxs[1].get());
-            if(id1 != nullptr && id1->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
-            if(id2 != nullptr && id2->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
-            return PairV(list->stxs[0].preeval(e), list->stxs[1].preeval(e));
-        }
-        else if (sum >= 3) {
-            int num = 0;
-            for(int i = 0; i < list->stxs.size(); i++) {
-                Identifier* id = dynamic_cast<Identifier*>(list->stxs[i].get());
-                if(id != nullptr && id->s == ".") num++;
-            }
-            if(num >= 2) throw RuntimeError(std::string("Wrong format of identifier"));
-            if(num == 1) {
-                Identifier* ide = dynamic_cast<Identifier*>(list->stxs[list->stxs.size() - 2].get());
-                if(!(ide != nullptr && ide->s == ".")) throw RuntimeError(std::string("Wrong format of identifier"));
-            }
-            Value pair = PairV(list->stxs[sum - 1].preeval(e),NullV());
-            for(int i = sum - 2; i >= 0; i--) {
-                pair = PairV(list->stxs[i].preeval(e), pair);
-            }
-            return pair;
-        }
-        return NullV();
-    }
-    if(ptr.get() == nullptr) return NullV();
-    throw RuntimeError(std::string("Data type error"));
-}
+// Value Syntax::preeval(Assoc &e) {
+//     Number* num = dynamic_cast<Number*>(ptr.get());
+//     if(num != nullptr) return IntegerV(num->n);
+//
+//     Identifier* id = dynamic_cast<Identifier*>(ptr.get());
+//     if(id != nullptr) return SymbolV(id->s);
+//
+//     TrueSyntax* tru = dynamic_cast<TrueSyntax*>(ptr.get());
+//     if(tru != nullptr) BooleanV(true);
+//
+//     FalseSyntax* fal = dynamic_cast<FalseSyntax*>(ptr.get());
+//     if(fal != nullptr) BooleanV(false);
+//
+//     List* list = dynamic_cast<List*>(ptr.get());
+//     if(list != nullptr) {
+//         int sum = list->stxs.size();
+//         if(sum == 1) {
+//             Identifier* id0 = dynamic_cast<Identifier*>(list->stxs[0].get());
+//             if(id0 != nullptr && id0->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+//             return PairV(list->stxs[0].preeval(e), NullV());
+//         }
+//         else if(sum == 2) {
+//             Identifier* id1 = dynamic_cast<Identifier*>(list->stxs[0].get());
+//             Identifier* id2 = dynamic_cast<Identifier*>(list->stxs[1].get());
+//             if(id1 != nullptr && id1->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+//             if(id2 != nullptr && id2->s == ".") throw RuntimeError(std::string("Wrong format of identifier"));
+//             return PairV(list->stxs[0].preeval(e), list->stxs[1].preeval(e));
+//         }
+//         else if (sum >= 3) {
+//             int num = 0;
+//             for(int i = 0; i < list->stxs.size(); i++) {
+//                 Identifier* id = dynamic_cast<Identifier*>(list->stxs[i].get());
+//                 if(id != nullptr && id->s == ".") num++;
+//             }
+//             if(num >= 2) throw RuntimeError(std::string("Wrong format of identifier"));
+//             if(num == 1) {
+//                 Identifier* ide = dynamic_cast<Identifier*>(list->stxs[list->stxs.size() - 2].get());
+//                 if(!(ide != nullptr && ide->s == ".")) throw RuntimeError(std::string("Wrong format of identifier"));
+//             }
+//             Value pair = PairV(list->stxs[sum - 1].preeval(e),NullV());
+//             for(int i = sum - 2; i >= 0; i--) {
+//                 pair = PairV(list->stxs[i].preeval(e), pair);
+//             }
+//             return pair;
+//         }
+//         return NullV();
+//     }
+//     if(ptr.get() == nullptr) return NullV();
+//     throw RuntimeError(std::string("Data type error"));
+// }
 
 Value Quote::eval(Assoc &e) {
     if(s.get() == nullptr) throw RuntimeError(std::string("Wrong number of variables"));
-    return s.preeval(e);
+
+    List* lst = dynamic_cast<List*>(s.get());
+    if(lst != nullptr){
+        int count = 0;
+        if(lst->stxs.size() == 0) return NullV();
+        for(int i = 0; i < lst->stxs.size();i++){
+            Identifier* ide = dynamic_cast<Identifier*>(lst->stxs[i].get());
+            if(ide != nullptr && ide->s == ".") count++;
+        }
+        if(count >= 2) throw RuntimeError("Too many dots in 'Quote'");
+        else if(count == 1) {
+            Identifier* ide = dynamic_cast<Identifier*>(lst->stxs[lst->stxs.size() - 2].get());
+            if(!(ide != nullptr && ide->s == ".")) throw RuntimeError("Wrong use of dot in 'Quote'");
+        }
+        Quote first_quote(lst->stxs[0]);
+        Value v = first_quote.eval(e);
+        List *list = new List();
+        for(int i = 1; i < lst->stxs.size(); i++) list->stxs.push_back(lst->stxs[i]);
+        Syntax second_list(list);
+        Expr second_v(new Quote(second_list));
+        return Value(new Pair(v,second_v->eval(e)));
+    }
+
+    Number* num = dynamic_cast<Number*>(s.get());
+    if(num != nullptr) return IntegerV(num->n);
+
+    Identifier* id = dynamic_cast<Identifier*>(s.get());
+    if(id != nullptr) return SymbolV(id->s);
+
+    TrueSyntax* tru = dynamic_cast<TrueSyntax*>(s.get());
+    if(tru != nullptr) BooleanV(true);
+
+    FalseSyntax* fal = dynamic_cast<FalseSyntax*>(s.get());
+    if(fal != nullptr) BooleanV(false);
+
+    throw RuntimeError(std::string("Data type error"));
 } // quote expression
 
 Value MakeVoid::eval(Assoc &e) {return Value(new Void());} // (void)
@@ -353,9 +388,9 @@ Value Cdr::evalRator(const Value &rand) {
         Symbol* ide = dynamic_cast<Symbol*>(ispair->car.get());
         if(ide != nullptr && ide->s == ".") {
             Pair* final_pair = dynamic_cast<Pair*>(ispair->cdr.get());
-            if(final_pair == nullptr) return ispair->cdr;
-            return final_pair->car;
+            if(final_pair != nullptr) return final_pair->car;
+            return ispair->cdr;
         }
     }
-    return pair->cdr;
+    return subpair;
 } // cdr
