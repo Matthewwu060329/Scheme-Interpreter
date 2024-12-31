@@ -12,16 +12,14 @@ extern std :: map<std :: string, ExprType> reserved_words;
 
 Value Let::eval(Assoc &env) {
     if(body.get() == nullptr) throw RuntimeError("Wrong format of 'Let'");
-
-    Assoc e = env;
+    Assoc env1 = env;
     for(int i = 0; i < bind.size(); i++) {
         std::string varName = bind[i].first;
         Expr expr = bind[i].second;
-        Value value = expr->eval(e);
-        env = Assoc(new AssocList(varName, value, env));
+        Value value = expr->eval(env);
+        env1 = extend(varName, value, env1);
     }
-
-    return body->eval(env);
+    return body->eval(env1);
 } // let expression
 
 Value Lambda::eval(Assoc &env) {
@@ -49,18 +47,14 @@ Value Letrec::eval(Assoc &env) {
     Assoc env1 = env;
     for(int i = 0; i < bind.size(); i++) {
         std::string varName = bind[i].first;
-        env1 = Assoc(new AssocList(varName, Value(nullptr), env1));
+        env1 = extend(varName, Value(nullptr), env1);
     }
 
-    Assoc env2 = env1;
     for(int i = 0; i < bind.size(); i++) {
-        std::string varName = bind[i].first;
-        Expr expr = bind[i].second;
-        Value value = expr->eval(env1);
-        env2 = Assoc(new AssocList(varName, value, env2));
+        modify(bind[i].first, bind[i].second->eval(env1), env1);
     }
 
-    return body->eval(env2);
+    return body->eval(env1);
 } // letrec expression
 
 Value Var::eval(Assoc &e) {
@@ -192,135 +186,135 @@ Value Unary::eval(Assoc &e) {return this->evalRator(rand->eval(e));} // evaluati
 Value Mult::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Integer(dynamic_cast<Integer*>(rand1.get())->n *
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return IntegerV(dynamic_cast<Integer*>(rand1.get())->n *
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // *
 
 Value Plus::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Integer(dynamic_cast<Integer*>(rand1.get())->n +
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return IntegerV(dynamic_cast<Integer*>(rand1.get())->n +
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // +
 
 Value Minus::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Integer(dynamic_cast<Integer*>(rand1.get())->n -
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return IntegerV(dynamic_cast<Integer*>(rand1.get())->n -
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // -
 
 Value Less::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Boolean(dynamic_cast<Integer*>(rand1.get())->n <
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return BooleanV(dynamic_cast<Integer*>(rand1.get())->n <
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // <
 
 Value LessEq::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Boolean(dynamic_cast<Integer*>(rand1.get())->n <=
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return BooleanV(dynamic_cast<Integer*>(rand1.get())->n <=
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // <=
 
 Value Equal::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Boolean(dynamic_cast<Integer*>(rand1.get())->n ==
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return BooleanV(dynamic_cast<Integer*>(rand1.get())->n ==
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // =
 
 Value GreaterEq::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Boolean(dynamic_cast<Integer*>(rand1.get())->n >=
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return BooleanV(dynamic_cast<Integer*>(rand1.get())->n >=
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // >=
 
 Value Greater::evalRator(const Value &rand1, const Value &rand2) {
     if(rand1->v_type != V_INT || rand2->v_type != V_INT)
         throw RuntimeError(std::string("Wrong data type"));
-    return Value(new Boolean(dynamic_cast<Integer*>(rand1.get())->n >
-        dynamic_cast<Integer*>(rand2.get())->n));
+    return BooleanV(dynamic_cast<Integer*>(rand1.get())->n >
+        dynamic_cast<Integer*>(rand2.get())->n);
 } // >
 
 Value IsEq::evalRator(const Value &rand1, const Value &rand2) {
     Integer* num1 = dynamic_cast<Integer*>(rand1.get());
     Integer* num2 = dynamic_cast<Integer*>(rand2.get());
     if(num1 != nullptr && num2 != nullptr) {
-        if(num1->n == num2->n) return Value(new Boolean(true));
-        return Value(new Boolean(false));
+        if(num1->n == num2->n) return BooleanV(true);
+        return BooleanV(false);
     }
 
     Boolean* boo1 = dynamic_cast<Boolean*>(rand1.get());
     Boolean* boo2 = dynamic_cast<Boolean*>(rand2.get());
     if(boo1 != nullptr && boo2 != nullptr) {
-        if(boo1->b == boo2->b) return Value(new Boolean(true));
-        return Value(new Boolean(false));
+        if(boo1->b == boo2->b) return BooleanV(true);
+        return BooleanV(false);
     }
 
     Symbol* sym1 = dynamic_cast<Symbol*>(rand1.get());
     Symbol* sym2 = dynamic_cast<Symbol*>(rand2.get());
     if(sym1 != nullptr && sym2 != nullptr) {
-        if(sym1->s == sym2->s) return Value(new Boolean(true));
-        return Value(new Boolean(false));
+        if(sym1->s == sym2->s) return BooleanV(true);
+        return BooleanV(false);
     }
 
     Null* null1 = dynamic_cast<Null*>(rand1.get());
     Null* null2 = dynamic_cast<Null*>(rand2.get());
-    if(null1 != nullptr && null2 != nullptr) {return Value(new Boolean(true));}
+    if(null1 != nullptr && null2 != nullptr) return BooleanV(true);
 
     Void* void1 = dynamic_cast<Void*>(rand1.get());
     Void* void2 = dynamic_cast<Void*>(rand2.get());
-    if(void1 != nullptr && void2 != nullptr) {return Value(new Boolean(true));}
+    if(void1 != nullptr && void2 != nullptr) return BooleanV(true);
 
-    if(rand1.get() == rand2.get()) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(rand1.get() == rand2.get()) return BooleanV(true);
+    return BooleanV(false);
 } // eq?
 
 Value Cons::evalRator(const Value &rand1, const Value &rand2) {return Value(new Pair(rand1, rand2));} // cons
 
 Value IsBoolean::evalRator(const Value &rand) {
     Boolean* boo = dynamic_cast<Boolean*>(rand.get());
-    if(boo != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(boo != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // boolean?
 
 Value IsFixnum::evalRator(const Value &rand) {
     Integer* num = dynamic_cast<Integer*>(rand.get());
-    if(num != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(num != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // fixnum?
 
 Value IsSymbol::evalRator(const Value &rand) {
     Symbol* sym = dynamic_cast<Symbol*>(rand.get());
-    if(sym != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(sym != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // symbol?
 
 Value IsNull::evalRator(const Value &rand) {
     Null* null = dynamic_cast<Null*>(rand.get());
-    if(null != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(null != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // null?
 
 Value IsPair::evalRator(const Value &rand) {
     Pair* pair = dynamic_cast<Pair*>(rand.get());
-    if(pair != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(pair != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // pair?
 
 Value IsProcedure::evalRator(const Value &rand) {
     Closure* clo = dynamic_cast<Closure*>(rand.get());
-    if(clo != nullptr) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(clo != nullptr) return BooleanV(true);
+    return BooleanV(false);
 } // procedure?
 
 Value Not::evalRator(const Value &rand) {
     Boolean* boo = dynamic_cast<Boolean*>(rand.get());
-    if(boo !=nullptr && boo->b == false) return Value(new Boolean(true));
-    return Value(new Boolean(false));
+    if(boo != nullptr && boo->b == false) return BooleanV(true);
+    return BooleanV(false);
 } // not
 
 Value Car::evalRator(const Value &rand) {
