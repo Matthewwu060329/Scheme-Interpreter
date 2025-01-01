@@ -112,8 +112,7 @@ Value Var::eval(Assoc &e) {
         }
         return ClosureV(xs, expr, e);
     }
-
-    throw RuntimeError(std::string("Undefined identifier"));
+    throw RuntimeError(std::string("Undefined identifier" + x));
 } // evaluation of variable
 
 Value Fixnum::eval(Assoc &e) {return Value(new Integer(n));} // evaluation of a fixnum
