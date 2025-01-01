@@ -35,7 +35,6 @@ void REPL()
             std :: cout << "RuntimeError";
         }
         puts("");
-        global_env = empty();
     }
 }
 
