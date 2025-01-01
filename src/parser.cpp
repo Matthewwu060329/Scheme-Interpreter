@@ -55,9 +55,9 @@ Expr List :: parse(Assoc &env) {
             ExprType expr = iter2->second;
             if(expr == E_LAMBDA) {
                 vector<std::string> xs;
-                if(stxs.size() != 3) return Expr(new Lambda(xs, Expr(nullptr)));
+                if(stxs.size() != 3) throw RuntimeError(string("11" + std::to_string(stxs.size())));
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
-                if(list1 == nullptr) return Expr(new Lambda(xs, Expr(nullptr)));
+                if(list1 == nullptr) throw RuntimeError(string("22"));
                 Expr expr = nullptr;
                 Assoc env1 = env;
                 for(int i = 0; i < list1->stxs.size(); i++) {
@@ -84,7 +84,6 @@ Expr List :: parse(Assoc &env) {
             if(expr == E_LET) {
                 vector<pair<string,Expr>> bind;
                 if(stxs.size() != 3) return Expr(new Let(bind,Expr(nullptr)));
-
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
                 MakeVoid* void1 = dynamic_cast<MakeVoid*>(stxs[1].get());
                 if(list1 == nullptr && void1 == nullptr) return Expr(new Let(bind,Expr(nullptr)));
@@ -96,19 +95,24 @@ Expr List :: parse(Assoc &env) {
 
                         Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
                         if(unbind == nullptr) return Expr(new Let(bind,Expr(nullptr)));
-                        bind.push_back(make_pair(unbind->s, list0->stxs[1].parse(env)));
+                        Expr exp = list0->stxs[1].parse(env);
+                        bind.push_back(make_pair(unbind->s, exp));
                     }
                 }
-
-                return Expr(new Let(bind,stxs[2].parse(env)));
+                Assoc env1 = env;
+                for(int i = 0; i < list1->stxs.size(); i++) {
+                    List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
+                    Identifier* unbind = dynamic_cast<Identifier*>(list0->stxs[0].get());
+                    env1 = extend(unbind->s, NullV(), env1);
+                }
+                return Expr(new Let(bind,stxs[2].parse(env1)));
             }
             if(expr == E_LETREC) {
                 vector<pair<string,Expr>> bind;
                 if(stxs.size() != 3) return Expr(new Letrec(bind,Expr(nullptr)));
                 Assoc env1 = env;
                 List* list1 = dynamic_cast<List*>(stxs[1].get());
-                MakeVoid* void1 = dynamic_cast<MakeVoid*>(stxs[1].get());
-                if(list1 == nullptr && void1 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
+                if(list1 == nullptr) return Expr(new Letrec(bind,Expr(nullptr)));
                 if(list1 != nullptr) {
                     for(int i = 0; i < list1->stxs.size(); i++) {
                         List* list0 = dynamic_cast<List*>(list1->stxs[i].get());
